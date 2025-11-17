@@ -1,0 +1,344 @@
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <bits/stdc++.h>
+#include <algorithm>
+using namespace std;
+
+class Sorting
+{
+    public:
+    
+        void countingSort(vector<int>& arr, int n)
+        {
+            //Maximum element
+            
+            int k = *max_element(arr.begin(), arr.end());
+            
+            int count[k + 1] = {0};
+        
+            
+        
+            //Count frequency of each
+            for (int i = 0; i < n; i++) {    
+                count[arr[i]]++;
+            }
+            
+            //Compute prefix sum
+            for (int i = 1; i <= k; i++)
+            {
+                count[i] = count[i] + count[i - 1];
+            }
+        
+            //Output array
+            int ans[n];
+            for(int i = n - 1; i >= 0; i--)
+            {
+                ans[--count[arr[i]]] = arr[i];
+            }
+            
+            //Finishing touches, putting content of new array into original array
+            for (int i = 0; i < n; i++)
+            {
+                arr[i] = ans[i];
+            }
+            
+            ofstream file;
+            file.open("counting_sorted.txt");
+            for(int i = 0; i < n; i++)
+            {
+                file << arr[i] << "\n";
+            }
+            file.close();
+        }
+    
+        void insertionSort(vector<int>& arr, int n)
+        {
+            int key, j;
+            for (int i = 1; i < n; i++)
+            {
+                key = arr[i];
+                j = i - 1;
+                //Move elements of the array greater than the key to one position ahead
+                while(j >= 0 && arr[j] > key)
+                {
+                    arr[j+ 1] = arr[j];
+                    j = j - 1;
+                }
+                arr[j + 1] = key;
+            }
+            
+            ofstream file;
+            file.open("insertion_sorted.txt");
+            for(int i = 0; i < n; i++)
+            {
+                file << arr[i] << "\n";
+            }
+            file.close();
+        }
+    
+        void selectionSort(vector<int>& arr, int n)
+        {
+            int min_idx;
+        
+            for(int i = 0; i < n - 1; ++i)
+            {
+                //Develop a minimum number using i as the default
+                min_idx = i;
+            
+                //Seek the true minimum
+            
+                for(int j = i + 1; j < n; j++)
+                {
+                    if(arr[j] < arr[min_idx])
+                    {
+                        min_idx = j;
+                    }
+                }
+            
+                //Move the minimum to its correct position
+                swap(arr[i], arr[min_idx]);
+            }
+            
+            ofstream file;
+            file.open("selection_sorted.txt");
+            for(int i = 0; i < n; i++)
+            {
+                file << arr[i] << "\n";
+            }
+            file.close();
+        }
+    
+        int partition(vector<int> &vec, int low, int high)
+        {
+            //Last element as the pivot
+            int pivot = vec[high];
+            
+            //Index of element just before the last element
+            int i = (low - 1);
+            
+            for (int j = low; j <= high - 1; j++)
+            {
+                //If current element was smaller than or equal to the pibot
+                if (vec[j] <= pivot)
+                {
+                    i++;
+                    swap(vec[i], vec[j]);
+                }
+            }
+            
+            // Put pivot to its position
+            swap(vec[i + 1], vec[high]);
+            
+            //Return the point of partition
+            
+            return (i + 1);
+        }
+        
+        void quickSort(vector<int>& vec, int low, int high)
+        {
+            //Base case: Executed until the stsrting index low is lower than the ending index high
+            if(low < high)
+            {
+                //Partition index
+                int pi = partition(vec, low, high);
+                
+                //Sort elements separately before the Partition index
+                quickSort(vec, low, pi - 1);
+                quickSort(vec, pi + 1, high);
+
+            }
+            
+            ofstream file;
+            file.open("quick_sorted.txt");
+            for(int i = 0; i < vec.size(); i++)
+            {
+                file << vec[i] << "\n";
+            }
+            file.close();
+        }
+    
+        
+        //Merges two vec subarrays
+        
+        void merge(vector<int>& vec, int left, int mid, int right)
+        {
+            int i, j, k;
+            int n1 = mid - left + 1;
+            int n2 = right - mid;
+            
+            //Temporary vectors
+            vector<int> leftVec(n1), rightVec(n2);
+            
+            //Copy data to temporary vectors
+            for (i = 0; i < n1; i++)
+                leftVec[i] = vec[left + i];
+            for (j = 0; j < n2; j++)
+                rightVec[j] = vec[mid + 1 + j];
+                
+            //Merge vectors back into vec[lef...right]
+            i = 0;
+            j = 0;
+            k = left;
+            while (i < n1 && j < n2)
+            {
+                if (leftVec[i] <= rightVec[j]) {
+                    vec[k] = leftVec[i];
+                    i++;
+                } else {
+                vec[k] = rightVec[j];
+                j++;
+                }
+                k++;
+            }
+            
+        //Copy the remaining elements of leftVec[], if _Imaginary
+        
+        while(i < n1) {
+            vec[k] = leftVec[i];
+            i++;
+            k++;
+        }
+        
+        //Copy remnants of rightVec[], if any
+        while(j < n2) {
+            vec[k] = rightVec[j];
+            j++;
+            k++;
+        }
+        }
+        
+        void mergeSort(vector<int>& vec, int left, int right)
+        {
+            if(left < right)
+            {
+                //Calculate midpoint
+                int mid = left + (right - left) / 2;
+                
+                //First and second half Sorting
+                mergeSort(vec, left, mid);
+                mergeSort(vec, mid + 1, right);
+                
+                //Merge sorted halves
+                merge(vec, left, mid, right);
+            }
+            
+            ofstream file;
+            file.open("merge_sorted.txt");
+            for(int i = 0; i < vec.size(); i++)
+            {
+                file << vec[i] << "\n";
+            }
+            file.close();
+        }
+    
+        
+        void heapify(vector<int>& arr, int n, int i)
+        {
+            //Initialize largest as root
+            int largest = i;
+            
+            int l = 2 * i + 1; //Left
+            int r = 2 * i + 2; //Right
+            
+            //If left child is larger
+            if(l < n && arr[l] > arr[largest])
+            {
+                largest = l;
+            }
+            
+            //If right child larger
+            if(r < n && arr[r] > arr[largest])
+            {
+                largest = r;
+            }
+            
+            //If largest not root
+            if(largest != i)
+            {
+                swap(arr[i], arr[largest]);
+                
+                // Recursively heapify subtree
+                heapify(arr, n, largest);
+            }
+
+        }
+        
+        void heapSort(vector<int>& vec, int n)
+        {
+            //Build heap
+            for(int i = n / 2 - 1; i >= 0; i--)
+            {
+                heapify(vec, n, i);
+            }
+            
+            //Extract element step by step
+            for( int i = n - 1; i >= 0; i--)
+            {
+                swap(vec[0], vec[i]);
+                
+                //Call max heapify
+                heapify(vec, i, 0);
+            }
+            
+            ofstream file;
+            file.open("heap_sorted.txt");
+            for(int i = 0; i < n; i++)
+            {
+                file << vec[i] << "\n";
+            }
+            file.close();
+            
+        }
+};
+
+int main()
+{
+    ifstream numFile("numbers.txt");
+    
+    vector<int> numbers;
+    string x;
+    int numero;
+    int count = 0;
+    Sorting sort;
+    while(getline(numFile, x))
+    {
+        numero = stoi(x);
+        numbers.push_back(numero);
+        count++;
+    }
+    
+    numFile.close();
+    
+    cout << "Select the sort that you prefer: \n 1. Counting Sort \n 2. Insertion Sort \n 3. Selection Sort" << endl
+    << "4. Quick Sort \n 5. Merge Sort \n 6. Heap Sort"
+    << endl << "Insert here:";
+    
+    int choice;
+    cin >> choice;
+    
+    switch(choice)
+            {
+                case 1:
+                    sort.countingSort(numbers, count);
+                    break;
+                case 2:
+                    sort.insertionSort(numbers, count);
+                    break;
+                case 3:
+                    sort.selectionSort(numbers, count);
+                    break;
+                case 4:
+                    sort.quickSort(numbers, 0, count - 1);
+                    break;
+                case 5:
+                    sort.mergeSort(numbers, 0, count - 1);
+                    break;
+                case 6:
+                    sort.heapSort(numbers, count);
+                    break;
+
+    return 0;
+    }
+}
